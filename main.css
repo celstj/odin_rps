@@ -1,0 +1,17 @@
+/* .score { background-color: red;}
+
+.playerChoice {
+    background-color: green;
+}
+
+.pBtn {
+    background-color: blue;
+} */
+
+.reset {
+    display:none;
+}
+
+.reset:hover {
+    cursor: pointer;
+}

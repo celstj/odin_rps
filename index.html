@@ -6,12 +6,35 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <h1>Rock paper Scissors</h1>
-    <button onclick="game()">Start Game</button>
-    <p>This game is played in console. On Windows/Linux press CTRL Shift J to 
-        open the console. On mac, press Option J to open console, or right click
-        on page and click 'inspect'.
-    </p>
+    <div class="score">
+        <h1 class="ties">Ties: 0</h1>
+    </div>
+    <div class="winnerDiv">
+        <h1 class="winner"></h1>
+        <button class="reset" onclick="resetGame()">Play Again?</button>
+    </div>
+
+    <div class="playSection">
+        <h3 class="playerSelection"></h3>
+        <h3 class="playerScore">Score: 0</h3>
+        <div class="playerChoice">
+            <div id="playerSelected"></div>
+            <button class="pBtn" id="rock">Rock</button>
+            <button class="pBtn" id="paper">Paper</button>
+            <button class="pBtn" id="scissors">Scissors</button>
+        </div>
+    </div>
+
+    <div class="computerSection">
+        <h3 class="computerSelection"></h3>
+        <h3 class="computerScore">Score: 0</h3>
+        <div class="computerChoice">
+            <div id="computerSelected"></div>
+            <button class="rock">Rock</button>
+            <button class="paper">Paper</button>
+            <button class="scissors">Scissors</button>
+        </div>
+    </div>
     
 </body>
 <script src="main.js"></script>

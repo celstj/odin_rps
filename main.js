@@ -1,141 +1,138 @@
 
-// getComputerChoice function, loop through "RPS" randomly
-// a function where if player choice = computer choice "draw"
-// function of player choice != computer choice "lose" or "win"
-// print computer selection
-// print player selection
-// print playRound() of both selection to trigger result
-
-// const r = "rock";
-// const p = "paper";
-// const s = "scissors";
-// let choices = [r, p, s];
-
-// function game() {
-
-//     for (let i = 0; i < 5; i++){
-
-//         playerSelection = prompt("What is your weapon?");
-
-//         console.log("Round: "+(i+1));
-//         console.log("Player selected: "+playerSelection);
-//         console.log("Computer selected: "+computerSelection);        
-//         console.log(playRound(playerSelection, computerSelection));
-//         console.log ("----------");
-//     }
-// }
-
-// function getComputerChoice(){
-//     let random = choices[Math.floor(Math.random()*choices.length)];
-//     return random;
-// }
-
-// function playRound(playerSelection, computerSelection){
-    
-//     // const playerSelection = playerChoice();
-//     const computerSelection = getComputerChoice();
-
-//     if(playerSelection === computerSelection){
-//         return "Draw";
-//     }else if(
-//     (choiceP === "rock" && choiceC === "scissors") || 
-//     (choiceP === "paper" && choiceC === "rock") || 
-//     (choiceP === "scissors" && choiceC === "paper")){
-//     return "Player Wins";
-// }else {
-//     return "Player Loses";
-// }
-// }
-
-// game();
-
-
 //  ----  walk through solution
 
-
+let winners = [];
 const choices = ["rock", "paper", "scissors"];
-const winners = [];
 
-// game function, 5 rounds, log wins
-function game(){
-    for (let i = 0; i < 5; i++){
-        playRound(i);
-    }
-    logWins();
+function resetGame(){
+  winners = [];
+  document.querySelector('.playerScore').textContent = 'Score : 0';
+  document.querySelector('.computerScore').textContent = 'Score : 0';
+  document.querySelector('.ties').textContent = 'Ties : 0';
+  document.querySelector('.winner').textContent = '';
+  document.querySelector('#playerSelected').textContent = '';
+  document.querySelector('#computerSelected').textContent = '';
+  document.querySelector('.reset').style.display = 'none';
+}
+
+
+function startGame() {
+  //play the game until someone wins 5 rounds
+  let btns = document.querySelectorAll("button");
+
+  btns.forEach((btn) => 
+    btn.addEventListener("click", () => {
+      if(btn.id){
+        playRound(btn.id);
+        console.log(btn.id+"clicked");
+      }
+    })
+    );
 }
 
 // round plays, check winner, push winner into winners array, log round
-function playRound(round){
-  const playerSelection = playerChoice();
-  const computerSelection = computerChoice();
-  const winner = checkWinner(playerSelection, computerSelection);
+function playRound(playerChoice){
+  let wins = checkWins();
+  if(wins >= 5){
+    return;
+  }
+  
+  const computerChoice = computerSelect();
+
+  const winner = checkWinner(playerChoice, computerChoice);
   winners.push(winner);
-  logRound(playerSelection, computerSelection, winner, (round+1));
-
+  tallyWins();
+  displayRound(playerChoice, computerChoice, winner);
+  wins = checkWins();
+  
+  if( wins == 5) {
+    //display end results
+    //change the button to visible
+    // change the text to display winner
+    displayEnd();
+  }
 }
 
-// player choice func, input check (spelling, word, null, to Lowercase)
-function playerChoice(){
-  let input = prompt("Choose between rock, paper or scissors");
-  while (input == null){
-    input = prompt("Choose between rock, paper or scissors");
-  }
-  input = input.toLowerCase();
-  let check = validateInput(input);
+function displayEnd(){
+  let playerWins = winners.filter((item) => item == "Player").length;
 
-  while (check == false){
-    input = prompt(
-        "Choose between rock, paper or scissors, spelling must be exact"
-    );
-    while (input == null){
-        input = prompt("Choose between rock, paper or scissors");
-      }
-    input = input.toLowerCase();
-    check = validateInput(input);
+  if (playerWins == 5){
+    document.querySelector(".winner").textContent = 
+    'You Won 5 games, Congrats';
+  } else {
+    document.querySelector(".winner").textContent = 
+    'Sorry, the computer won 5 times';
   }
-  return input;
+  document.querySelector(".reset").style.display = "flex";
 }
+
+function displayRound(playerChoice, computerChoice, winner){
+  document.querySelector("#playerSelected").textContent = `You Chose: ${
+    playerChoice.charAt(0).toUpperCase() + playerChoice.slice(1)
+  }`;
+  document.querySelector("#playerSelected").textContent = `Computer Chose: ${
+    computerChoice.charAt(0).toUpperCase() + computerChoice.slice(1)
+  }`;
+  displayRoundWinner(winner);
+}
+
+function displayRoundWinner(winner){
+  if (winner == "Player"){
+    document.querySelector(".winner").textContent = "You won the Round!";
+  }else if (winner == "Computer"){
+    document.querySelector(".winner").textContent = "The Computer won the Round";
+  }else {
+    document.querySelector(".winner").textContent = "The Round was a tie";
+  }
+}
+
+function tallyWins(){
+    let pWinCount = winners.filter((item) => item == "Player").length;
+    let cWinCount = winners.filter((item) => item == "Computer").length;
+    let draws = winners.filter((item) => item == "Draw").length;
+    // able to select class/id names just in single quotes, 
+    //backtick to include js elements in dom
+    document.querySelector(".playerScore").textContent = `Score: ${pWinCount}`;
+    document.querySelector(".computerScore").textContent = `Score: ${cWinCount}`;
+    document.querySelector(".ties").textContent = `Score: ${draws}`;
+}
+
 
 // randomise computerchoice
-function computerChoice(){
-  return choices[Math.floor(Math.random()*choices.length)];
-}
-//input validator
-function validateInput(choice){
-    return choices.includes(choice);
+function computerSelect(){
+  //todo - update dom with computer selection
+  const choice = choices[Math.floor(Math.random() * choices.length)];
+
+    document.querySelector(`.${choice}`).classList.add("active");
+
+    // setTimeout(() => {
+    //   document.querySelector(`.${choice}`).classList.remove("active");
+    // }, 700);
+
+  return choice;
 }
 
-// check winner from rounds played
+
+function checkWins(){
+  const pWinCount = winners.filter((item) => item == "Player").length;
+  const cWinCount = winners.filter((item) => item == "Computer").length;
+  return Math.max(pWinCount, cWinCount);
+}
+
+
+//check winner from rounds played
 function checkWinner(choiceP, choiceC){
-    if(choiceP === choiceC){
-        return "Draw";
-    }else if(
-        (choiceP === "rock" && choiceC === "scissors") || 
-        (choiceP === "paper" && choiceC === "rock") || 
-        (choiceP === "scissors" && choiceC === "paper")
+    if (
+      (choiceP == "rock" && choiceC == "scissors") || 
+      (choiceP == "paper" && choiceC == "rock") || 
+      (choiceP == "scissors" && choiceC == "paper")
     ) {
-        return "Player Wins";
-    }else {
-     return "Player Loses";
-    }
+        return "Player";
+      } else if (choiceP == choiceC) {
+        return "Tie";
+      } else {
+        return "Computer";
+      }
 }
-// logging Winners
-function logWins(){
-    let playerWins = winners.filter((item) => item == "Player Wins").length;
-    let computerWins = winners.filter((item) => item == "Player Loses").length;
-    let draws = winners.filter((item) => item == "Draw").length;
-    console.log("Results: ");
-    console.log("Player Wins: ", playerWins);
-    console.log("Computer Wins: ", computerWins);
-    console.log("Draw: ", draws);
-}
-//log round results
-function logRound(playerChoice, computerChoice, winner, round) {
 
-    console.log("Round: "+round);
-    console.log("Player chose: "+playerChoice);
-    console.log("Computer chose: "+computerChoice);
-    console.log(winner);
-    console.log ("----------");
-
-}
+startGame();
